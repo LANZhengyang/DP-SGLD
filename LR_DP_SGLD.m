@@ -12,21 +12,29 @@ delta = 0.1;
 L = 0.8; % Lipschitz constant
 %T = epsilon^2*N/(32*tau*log(2/delta))+1;
 T = 2*N;
-alpha = 0.5;
+alpha = 0.1;
 maxIter = floor(N*T/tau);
+
+% Initialization with OPS
+B = 0.8;
+betaInitOPS = LR_OPS(X,y,B,epsilon);
 
 % prior
 muStar = zeros(D,1);
 SigmaStar = eye(D);
 invSigmaStar = inv(SigmaStar);
 
-%% Initialize
-beta0 = rand(1,D);
 
+%% Initialize
+beta0 = betaInitOPS(end,:);
+%beta0 = rand(1,D);
+%beta0 = zeros(1,D);
 betaVec = [];
 betaVec(1,:) = beta0;
+
 eta = zeros(maxIter,1);
 z = zeros(maxIter,D);
+
 
 % simple random walk Metropolis
 for t = 1:maxIter
@@ -35,6 +43,7 @@ for t = 1:maxIter
     S = randsample(N,tau);
     
     % sample coordinates of z
+    % eta(t) = a*(b+t)^(-gamma);
     eta(t) = alpha*epsilon^2/(128*L^2*log(2.5*N*T/tau/delta)*log(2/delta)*t);
     etaBound = alpha*eta(t)/t*N*T/tau;
     zVar = max(eta(t),etaBound);
@@ -60,5 +69,4 @@ end
 
 burnIn = maxIter - (1-alpha)*N*T/tau;
 samples = betaVec(burnIn+1:end,:);
-
 end

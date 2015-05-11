@@ -27,8 +27,8 @@ SigmaStar = eye(D);
 invSigmaStar = inv(SigmaStar);
 
 % vary values of epsilon
-nEps = 20;
-logEps = linspace(-5,5,nEps);
+nEps = 10;
+logEps = linspace(-3,3,nEps);
 epsilon = exp(logEps);
 
 nRepeat = 100;
@@ -66,8 +66,7 @@ for l = 1:nRepeat
     end
     
     % Generate beta
-    nPred = 1000;
-    
+ 
     % Prediction results for SGLD
     betaSamples = SGLDsamples;
     probPred = mean(exp(XTest*betaSamples')./(1+exp(XTest*betaSamples')),2);
@@ -97,7 +96,7 @@ figure(1);
 errorbar(logEps,loglikSGLDMean,loglikSGLDMeanStd);
 hold on;
 errorbar(logEps,loglikDPSGLDMean,loglikDPSGLDMeanStd);
-title('Logliklihood');
+title('Log-likelihood');
 legend('SGLD','DP-SGLD');
 
 % save figures
